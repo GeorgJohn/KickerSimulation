@@ -1,0 +1,92 @@
+from enum import IntEnum
+"""
+Datenbank aller Konstanten groeßen der Simulation
+
+Laengenmaße in mm
+Geschwindigkeiten in mm/msec
+Winkel in rad
+Winkelgeschwindigkeit in rad/sec
+Farben in RGB
+Masse in [g] Gramm
+"""
+
+SEC_PER_FRAME = 1 / 60
+
+
+"""Fenster"""
+SCREEN_WIDTH = 1360
+SCREEN_HIGH = 840
+MARGIN_LEFT = 80
+MARGIN_RIGHT = 80
+MARGIN_BUTTON = 30
+MARGIN_TOP = 130
+
+"""Infofenster"""
+INFO_DISP_HIGH = 100
+
+"""Grundfarben"""
+WITHE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARK_BLUE = (11, 36, 158)
+
+"""Spielfeld"""
+COURT_WIDTH = 1200
+COURT_HEIGHT = 680
+GOAL_BAR_POS = 240
+GOAL_SIZE = 200
+FIELD_COLOUR = (12, 128, 40)
+COURT_LINE_THICKNESS = 8
+COURT_LINE_POINT_RADIUS = 10
+COURT_LINE_CIRCLE_RADIUS = 103
+
+"""Ball"""
+BALL_RADIUS = 17
+BALL_MASS = 23.13
+
+"""Spielfiguren"""
+FIGURE_WIDTH = 10
+FIGURE_HEIGHT = 23
+
+MAX_POS_KEEPER = 242
+MAX_POS_DEFENDER = 366
+MAX_POS_MIDFIELDER = 114
+MAX_POS_FORWARD = 230
+
+X_POSITION_HUMAN_KEEPER = 79
+KEEPER_OFFSET_X = MARGIN_LEFT + X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH // 2
+KEEPER_OFFSET_Y = (COURT_HEIGHT - MAX_POS_KEEPER) // 2 + MARGIN_TOP - FIGURE_HEIGHT // 2
+
+
+class TeamComputer(IntEnum):
+    KEEPER = 1
+    DEFENDER_RIGHT = 2
+    DEFENDER_LEFT = 3
+    MIDFIELDER_HALF_RIGHT = 4
+    MIDFIELDER_CENTER = 5
+    MIDFIELDER_HALF_LEFT = 6
+    MIDFIELDER_RIGHT = 7
+    FORWARD_RIGHT = 8
+    FORWARD_CENTER = 9
+    FORWARD_LEFT = 10
+    MIDFIELDER_LEFT = 11
+
+
+class TeamHuman(IntEnum):
+    KEEPER = 1
+    DEFENDER_RIGHT = 2
+    DEFENDER_LEFT = 3
+    MIDFIELDER_HALF_RIGHT = 4
+    MIDFIELDER_CENTER = 5
+    MIDFIELDER_HALF_LEFT = 6
+    MIDFIELDER_RIGHT = 7
+    FORWARD_RIGHT = 8
+    FORWARD_CENTER = 9
+    FORWARD_LEFT = 10
+    MIDFIELDER_LEFT = 11
+
+
+class GameBorder(IntEnum):
+    TOP = 1
+    BUTTON = 2
+    LEFT = 3
+    RIGHT = 4

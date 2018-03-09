@@ -1,34 +1,22 @@
 import math
+from src.Constant import COURT_HEIGHT
 
 
 class GameBar:
-    def __init__(self, position, acceleration, max_speed, time_delta):
+    def __init__(self, position, speed, time_delta):
         self._position = position
-        self._speed = 0
-        self._acceleration = acceleration
-        self._max_speed = max_speed
+        self._next_position = -1
+        self._speed = speed
         self._time_delta = time_delta
 
     def get_position(self):
         return self._position
 
-    def get_speed(self):
+    def get_max_speed(self):
         return self._speed
 
-    def set_speed(self, speed):
+    def set_max_speed(self, speed):
         self._speed = speed
-
-    def get_acceleration(self):
-        return self._acceleration
-
-    def set_acceleration(self, acceleration):
-        self._acceleration = acceleration
-
-    def get_max_speed(self):
-        return self._max_speed
-
-    def set_max_speed(self, max_speed):
-        self._max_speed = max_speed
 
 
 class Keeper(GameBar):
@@ -36,68 +24,43 @@ class Keeper(GameBar):
     NUMBER_OF_FIGURES = 1
     DISTANCE_FIGURES = 0
     MAX_POS_KEEPER = 242
+    OFFSET_KEEPER = (COURT_HEIGHT - MAX_POS_KEEPER) / 2
     POSITION_ON_BAR = 219
 
-    def __init__(self, acceleration, max_speed, time_delta):
-        super().__init__(self.MAX_POS_KEEPER / 2, acceleration, max_speed, time_delta)
+    def __init__(self, speed, time_delta):
+        super().__init__(self.MAX_POS_KEEPER / 2, speed, time_delta)
 
-    def move_up(self):
-        new_speed = self._speed + self._acceleration * self._time_delta
-        if new_speed <= self._max_speed:
-            new_position = self._position + self._speed * self._time_delta \
-                       + 0.5 * self._acceleration * self._time_delta * self._time_delta
-            if new_position <= self.MAX_POS_KEEPER:
-                self._position = new_position
-            else:
-                self._position = self.MAX_POS_KEEPER
-            self._speed = new_speed
-        else:
-            self._speed = self._max_speed
+    def _new_desired_pos(self, desired_pos):
+        if 0 <= desired_pos <= self.MAX_POS_KEEPER:
+            self._next_position = desired_pos
+            self._pos_next_time_step()
+
+    def _pos_next_time_step(self):
+        if self._next_position > self._position:
             new_position = self._position + self._speed * self._time_delta
-            if new_position <= self.MAX_POS_KEEPER:
-                self._position = new_position
-            else:
-                self._position = self.MAX_POS_KEEPER
-
-    def move_down(self):
-        new_speed = self._speed - self._acceleration * self._time_delta
-        if new_speed >= - self._max_speed:
-            new_position = self._position + self._speed * self._time_delta \
-                           - 0.5 * self._acceleration * self._time_delta * self._time_delta
-            if new_position >= 0:
-                self._position = new_position
-            else:
-                self._position = 0
-            self._speed = new_speed
+            if self._next_position > new_position:
+                new_position = self._next_position
+        elif self._next_position < self._position:
+            new_position = self._position - self._speed * self._time_delta
+            if self._next_position < new_position:
+                new_position = self._next_position
         else:
-            self._speed = - self._max_speed
-            new_position = self._position + self._speed * self._time_delta
-            if new_position >= 0:
-                self._position = new_position
-            else:
-                self._position = 0
+            new_position = self._next_position
 
-    def stop(self):
-        self.set_speed(0)
+        if new_position > self.MAX_POS_KEEPER:
+            self._position = self.MAX_POS_KEEPER
+        elif new_position < 0:
+            self._position = 0
+        else:
+            self._position = new_position
 
 
 class Strategy(Keeper):
-    def __init__(self, acceleration, max_speed, time_delta):
-        super().__init__(acceleration, max_speed, time_delta)
+    def __init__(self, speed, time_delta):
+        super().__init__(speed, time_delta)
 
     def new_strategy_step(self, ball):
-        if ball.get_angle() > math.pi < 2*math.pi:
-            if round(self._position) == self.MAX_POS_KEEPER / 2:
-                self.stop()
-            elif self._position < self.MAX_POS_KEEPER / 2:
-                self.move_up()
-            elif self._position > self.MAX_POS_KEEPER / 2:
-                self.move_down()
-
+        if ball.get_angle() > math.pi < 2 * math.pi:
+            self._new_desired_pos(self.MAX_POS_KEEPER/2)
         else:
-            if round(self._position) == ball.get_y_position():
-                self.stop()
-            elif self._position < ball.get_y_position():
-                self.move_up()
-            elif self._position > ball.get_y_position():
-                self.move_down()
+            self._new_desired_pos(ball.get_y_position() - self.OFFSET_KEEPER)

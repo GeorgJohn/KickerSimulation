@@ -4,8 +4,6 @@ from src.Constant import *
 
 class View:
     def __init__(self):
-        self.__disp_x_position = 0
-        self.__disp_y_position = 0
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGH))
         pygame.display.set_caption('ProCK Simulation')
 
@@ -23,20 +21,20 @@ class View:
                           FIGURE_WIDTH, FIGURE_HEIGHT])
 
     def display_court_line(self):
-        pygame.draw.circle(self.screen, WITHE, (600 + MARGIN_LEFT, 345 + MARGIN_TOP), COURT_LINE_POINT_RADIUS)
-        pygame.draw.circle(self.screen, WITHE, (830 + MARGIN_LEFT, 345 + MARGIN_TOP), COURT_LINE_POINT_RADIUS)
-        pygame.draw.circle(self.screen, WITHE, (370 + MARGIN_LEFT, 345 + MARGIN_TOP), COURT_LINE_POINT_RADIUS)
-        pygame.draw.line(self.screen, WITHE, (600 + MARGIN_LEFT, 0 + MARGIN_TOP),
-                         (600 + MARGIN_LEFT, 245 + MARGIN_TOP), COURT_LINE_THICKNESS)
-        pygame.draw.line(self.screen, WITHE, (600 + MARGIN_LEFT, 445 + MARGIN_TOP),
+        pygame.draw.circle(self.screen, WITHE, (600 + MARGIN_LEFT, 340 + MARGIN_TOP), COURT_LINE_POINT_RADIUS)
+        pygame.draw.circle(self.screen, WITHE, (830 + MARGIN_LEFT, 340 + MARGIN_TOP), COURT_LINE_POINT_RADIUS)
+        pygame.draw.circle(self.screen, WITHE, (370 + MARGIN_LEFT, 340 + MARGIN_TOP), COURT_LINE_POINT_RADIUS)
+        pygame.draw.line(self.screen, WITHE, (600 + MARGIN_LEFT, MARGIN_TOP),
+                         (600 + MARGIN_LEFT, 240 + MARGIN_TOP), COURT_LINE_THICKNESS)
+        pygame.draw.line(self.screen, WITHE, (600 + MARGIN_LEFT, 440 + MARGIN_TOP),
                          (600 + MARGIN_LEFT, SCREEN_HIGH - MARGIN_BUTTON), COURT_LINE_THICKNESS)
-        pygame.draw.rect(self.screen, WITHE, [-10 + MARGIN_LEFT, 145 + MARGIN_TOP, 290, 400], COURT_LINE_THICKNESS)
-        pygame.draw.rect(self.screen, WITHE, [920 + MARGIN_LEFT, 145 + MARGIN_TOP, 290, 400], COURT_LINE_THICKNESS)
-        pygame.draw.rect(self.screen, WITHE, [-10 + MARGIN_LEFT, 210 + MARGIN_TOP, 160, 270], COURT_LINE_THICKNESS)
-        pygame.draw.rect(self.screen, WITHE, [1050 + MARGIN_LEFT, 210 + MARGIN_TOP, 160, 270], COURT_LINE_THICKNESS)
+        pygame.draw.rect(self.screen, WITHE, [-10 + MARGIN_LEFT, 140 + MARGIN_TOP, 290, 400], COURT_LINE_THICKNESS)
+        pygame.draw.rect(self.screen, WITHE, [920 + MARGIN_LEFT, 140 + MARGIN_TOP, 290, 400], COURT_LINE_THICKNESS)
+        pygame.draw.rect(self.screen, WITHE, [-10 + MARGIN_LEFT, 205 + MARGIN_TOP, 160, 270], COURT_LINE_THICKNESS)
+        pygame.draw.rect(self.screen, WITHE, [1050 + MARGIN_LEFT, 205 + MARGIN_TOP, 160, 270], COURT_LINE_THICKNESS)
         pygame.draw.arc(self.screen, WITHE, [135 + MARGIN_LEFT, 245 + MARGIN_TOP, 200, 200],
                         5.2, 1.1, COURT_LINE_THICKNESS)
-        pygame.draw.arc(self.screen, WITHE, [865 + MARGIN_LEFT, 245 + MARGIN_TOP, 200, 200],
+        pygame.draw.arc(self.screen, WITHE, [865 + MARGIN_LEFT, 240 + MARGIN_TOP, 200, 200],
                         2.05, 4.25, COURT_LINE_THICKNESS)
         pygame.draw.circle(self.screen, WITHE, (600 + MARGIN_LEFT, 345 + MARGIN_TOP), COURT_LINE_CIRCLE_RADIUS,
                            COURT_LINE_THICKNESS)

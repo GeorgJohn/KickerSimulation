@@ -15,13 +15,13 @@ ball_angle = random.uniform(0,  2 * math.pi)  # 3/2 * math.pi + 0.1  #
 ball_angle_speed = 1.0
 time_delta = 1 / 60
 acceleration_bar = 0.5 * 1000  # Beschleunigung in m/s^2
-max_speed = 2 * 1000  # Stangen maximal Geschwindigkeit in m/s
+speed = 0.1 * 1000  # Stangen maximal Geschwindigkeit in m/s
 
 my_view = Simulation_View.View()
 my_ball = Ball_Model.Ball(ball_start_pos_x, ball_start_pos_y, ball_start_pos_z, ball_speed, ball_angle,
                           ball_angle_speed, time_delta)
 
-my_strategy = SimpleHumanAI_Model.Strategy(acceleration_bar, max_speed, time_delta)
+my_strategy = SimpleHumanAI_Model.Strategy(speed, time_delta)
 
 running = True
 while running:

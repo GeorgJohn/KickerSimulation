@@ -38,12 +38,8 @@ class Keeper(GameBar):
     def _pos_next_time_step(self):
         if self._next_position > self._position:
             new_position = self._position + self._speed * self._time_delta
-            if self._next_position > new_position:
-                new_position = self._next_position
         elif self._next_position < self._position:
             new_position = self._position - self._speed * self._time_delta
-            if self._next_position < new_position:
-                new_position = self._next_position
         else:
             new_position = self._next_position
 

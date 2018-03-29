@@ -10,11 +10,11 @@ from src import SimpleHumanAI_Model
 ball_start_pos_x = COURT_WIDTH / 2  # random.randint(20, Const.COURT_WIDTH - 20)
 ball_start_pos_y = COURT_HEIGHT / 2  # random.randint(20, Const.COURT_HEIGHT - 20)  # Position wo der Ball startet
 ball_start_pos_z = 0
-ball_speed = 0.2 * 1000  # Geschwindigkeit in m/s
+ball_speed = 1 * 1000  # Geschwindigkeit in m/s
 ball_angle = random.uniform(0,  2 * math.pi)  # 3/2 * math.pi + 0.1  #
 ball_angle_speed = 1.0
 time_delta = 1 / 60
-acceleration_bar = 0.5 * 1000  # Beschleunigung in m/s^2
+acceleration_bar = 1 * 1000  # Beschleunigung in m/s^2
 speed = 100  # Stangen maximal Geschwindigkeit in m/s
 
 my_view = Simulation_View.View()

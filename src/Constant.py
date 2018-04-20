@@ -57,6 +57,17 @@ KEEPER_OFFSET_X = MARGIN_LEFT + X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH // 2
 KEEPER_OFFSET_Y = (COURT_HEIGHT - MAX_POS_KEEPER) // 2 + MARGIN_TOP - FIGURE_HEIGHT // 2
 
 
+class Coordinate(IntEnum):
+    X = 0
+    Y = 1
+    Z = 2
+
+
+class Gamer(IntEnum):
+    HUMAN = 0
+    COMPUTER = 1
+
+
 class TeamComputer(IntEnum):
     KEEPER = 1
     DEFENDER_RIGHT = 2

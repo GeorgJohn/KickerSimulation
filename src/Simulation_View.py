@@ -56,6 +56,6 @@ class View:
                          (COURT_WIDTH + MARGIN_LEFT, SCREEN_HIGH - MARGIN_BUTTON), 2)
 
     def display_score(self, score):
-        text = self.smallfont.render(str(score[0]) + " : " + str(score[1]), True, BLACK)
+        text = self.smallfont.render(str(score[Gamer.HUMAN]) + " : " + str(score[Gamer.COMPUTER]), True, BLACK)
         text_width = text.get_rect().width
         self.screen.blit(text, [SCREEN_WIDTH / 2 - text_width / 2, 0])

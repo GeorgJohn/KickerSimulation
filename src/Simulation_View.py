@@ -4,7 +4,9 @@ from src.Constant import *
 
 class View:
     def __init__(self):
+        pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGH))
+        self.smallfont = pygame.font.SysFont("comicsansms", 72)
         pygame.display.set_caption('ProCK Simulation')
 
     def display_empty_screen(self):
@@ -52,3 +54,8 @@ class View:
                          (MARGIN_LEFT - 2, SCREEN_HIGH - MARGIN_BUTTON), 2)
         pygame.draw.line(self.screen, BLACK, (COURT_WIDTH + MARGIN_LEFT, MARGIN_TOP - 2),
                          (COURT_WIDTH + MARGIN_LEFT, SCREEN_HIGH - MARGIN_BUTTON), 2)
+
+    def display_score(self, score):
+        text = self.smallfont.render(str(score[0]) + " : " + str(score[1]), True, BLACK)
+        text_width = text.get_rect().width
+        self.screen.blit(text, [SCREEN_WIDTH / 2 - text_width / 2, 0])

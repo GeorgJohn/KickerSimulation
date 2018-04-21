@@ -1,4 +1,5 @@
 import math
+import random
 from src.Constant import*
 
 
@@ -57,11 +58,11 @@ class Keeper(GameBar):
 
     def check_for_shoot(self, ball):
         retval = False
-        x_distance = COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH // 2 - ball.get_x_position()
-        y_distance = self._position + self.POSITION_ON_BAR - ball.get_y_position()
+        x_distance = COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH // 2 - ball.get_new_x_position()
+        y_distance = self._position + self.POSITION_ON_BAR - ball.get_new_y_position()
         if math.sqrt(x_distance * x_distance + y_distance * y_distance) < (FIGURE_HEIGHT // 2 + BALL_RADIUS):
             if y_distance == 0:
-                self.shoot(ball, 3 * math.pi / 2)
+                self.shoot(ball, 3 * math.pi / 2 + random.uniform(-0.01, 0.01))
             elif y_distance < 0:
                 self.shoot(ball, (2 * math.pi - math.atan(x_distance / math.fabs(y_distance))))
             else:
@@ -73,7 +74,7 @@ class Keeper(GameBar):
 
     def shoot(self, ball, new_angle):
         ball.set_new_angle(new_angle)
-        ball.set_speed(1000)
+        ball.set_speed(2000)
         ball.set_new_x_position(ball.get_x_position() + math.sin(ball.get_new_angle()) * ball.get_speed() * self._time)
         ball.set_new_y_position(ball.get_y_position() + math.cos(ball.get_new_angle()) * ball.get_speed() * self._time)
 

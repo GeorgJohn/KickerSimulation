@@ -1,7 +1,6 @@
 import pygame
 import random
 import math
-import time
 from src.Constant import *
 from src import Simulation_View
 from src import Ball_Model
@@ -14,11 +13,11 @@ ball_start_pos_x = COURT_WIDTH / 2  # random.randint(20, Const.COURT_WIDTH - 20)
 ball_start_pos_y = COURT_HEIGHT / 2  # random.randint(20, Const.COURT_HEIGHT - 20)  # Position wo der Ball startet
 ball_start_pos_z = 0
 ball_speed = 1 * 1000  # Geschwindigkeit in m/s
-ball_angle = random.uniform(0,  2 * math.pi)  # 3/2 * math.pi + 0.1  #
+ball_angle = random.uniform(math.pi / 4, 3 * math.pi / 4)  # 3/2 * math.pi + 0.1  #
 ball_angle_speed = 1.0
 time_delta = 1 / 60
 acceleration_bar = 2 * 1000  # Beschleunigung in m/s^2
-speed = 1000  # Stangen maximal Geschwindigkeit in m/s
+speed = 749  # Stangen maximal Geschwindigkeit in m/s
 
 clock = pygame.time.Clock()
 my_view = Simulation_View.View()

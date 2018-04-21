@@ -8,6 +8,8 @@ from src import Ball_Model
 from src import Kicker_Model
 from src import SimpleHumanAI_Model
 
+random.seed
+
 ball_start_pos_x = COURT_WIDTH / 2  # random.randint(20, Const.COURT_WIDTH - 20)
 ball_start_pos_y = COURT_HEIGHT / 2  # random.randint(20, Const.COURT_HEIGHT - 20)  # Position wo der Ball startet
 ball_start_pos_z = 0
@@ -16,7 +18,7 @@ ball_angle = random.uniform(0,  2 * math.pi)  # 3/2 * math.pi + 0.1  #
 ball_angle_speed = 1.0
 time_delta = 1 / 60
 acceleration_bar = 2 * 1000  # Beschleunigung in m/s^2
-speed = 500  # Stangen maximal Geschwindigkeit in m/s
+speed = 1000  # Stangen maximal Geschwindigkeit in m/s
 
 clock = pygame.time.Clock()
 my_view = Simulation_View.View()
@@ -28,7 +30,7 @@ my_strategy = SimpleHumanAI_Model.Strategy(speed, time_delta)
 running = True
 while running:
 
-    my_ball.move(my_kicker)
+    my_ball.move(my_kicker, my_strategy)
     my_strategy.new_strategy_step(my_ball)
 
     my_view.display_empty_screen()

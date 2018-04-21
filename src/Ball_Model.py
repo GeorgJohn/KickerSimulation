@@ -13,9 +13,13 @@ class Ball:
         self.__omega = omega_z
         self.__time = time_delta
 
-    def move(self, kicker):
+    def move(self, kicker, keeper):
         self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.sin(self.__angle) * self.__speed * self.__time
         self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.cos(self.__angle) * self.__speed * self.__time
+
+        if COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH // 2 > self.__pos[Coordinate.X] > COURT_WIDTH - \
+                X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH - BALL_RADIUS and 0 < self.__angle < math.pi:
+            keeper.check_for_shoot(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):

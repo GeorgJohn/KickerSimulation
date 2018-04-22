@@ -56,9 +56,14 @@ class Keeper(GameBar):
         else:
             self._position = new_position
 
+    def game_bar_intersection(self, ball):
+        y_intersection = (COURT_WIDTH - X_POSITION_HUMAN_KEEPER - ball.get_x_position()) / math.tan(ball.get_angle()) \
+                       + ball.get_y_position()
+        if math.fabs(self._position + self.POSITION_ON_BAR - y_intersection) < FIGURE_HEIGHT / 2 + BALL_RADIUS:
+            self.check_for_shoot(ball)
+
     def check_for_shoot(self, ball):
-        retval = False
-        x_distance = COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH // 2 - ball.get_new_x_position()
+        x_distance = COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH / 2 - ball.get_new_x_position()
         y_distance = self._position + self.POSITION_ON_BAR - ball.get_new_y_position()
         if math.sqrt(x_distance * x_distance + y_distance * y_distance) < (FIGURE_HEIGHT // 2 + BALL_RADIUS):
             if y_distance == 0:

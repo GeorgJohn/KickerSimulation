@@ -17,7 +17,7 @@ ball_angle = random.uniform(math.pi / 4, 3 * math.pi / 4)  # 3/2 * math.pi + 0.1
 ball_angle_speed = 1.0
 time_delta = 1 / 60
 acceleration_bar = 2 * 1000  # Beschleunigung in m/s^2
-speed = 749  # Stangen maximal Geschwindigkeit in m/s
+speed = 500  # Stangen maximal Geschwindigkeit in m/s
 
 clock = pygame.time.Clock()
 my_view = Simulation_View.View()

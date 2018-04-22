@@ -14,21 +14,22 @@ class Ball:
         self.__time = time_delta
 
     def move(self, kicker, keeper):
-        if self.__speed > 200:
-            self.__speed = math.sqrt(self.__speed * self.__speed - 2 * 0.1 * 9810)
-        else:
-            self.__speed = 200
-
         self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.sin(self.__angle) * self.__speed * self.__time
         self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.cos(self.__angle) * self.__speed * self.__time
 
-        if self.__pos[Coordinate.X] < COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH \
+        if COURT_WIDTH / 2 < self.__pos[Coordinate.X] < COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH / 2 \
                 and 0 < self.__angle < math.pi:
-            keeper.check_for_shoot(self)
+            keeper.game_bar_intersection(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):
             i = i + 1
+
+        new_speed_square = self.__speed * self.__speed - 2 * 0.15 * 9810
+        if new_speed_square > 0:
+            self.__speed = math.sqrt(new_speed_square)
+        else:
+            self.kick_off()
 
         self.__pos[Coordinate.X] = self.__new_pos[Coordinate.X]
         self.__pos[Coordinate.Y] = self.__new_pos[Coordinate.Y]

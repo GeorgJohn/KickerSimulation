@@ -18,6 +18,10 @@ class View:
                             (round(_ball.get_y_position()) + MARGIN_TOP)), BALL_RADIUS)
 
     def display_human_figures(self, keeper):
+        # pygame.draw.arc(self.screen, DARK_BLUE, [KEEPER_OFFSET_CIRCLE_X,
+        #                                         round(keeper.get_position()) + KEEPER_OFFSET_CIRCLE_Y,
+        #                                         FIGURE_DIAMETER, FIGURE_DIAMETER],
+        #                FIGURE_VIEW_START_ANGLE, FIGURE_VIEW_END_ANGLE, int(FIGURE_RADIUS))
         pygame.draw.rect(self.screen, DARK_BLUE,
                          [KEEPER_OFFSET_X, round(keeper.get_position()) + KEEPER_OFFSET_Y,
                           FIGURE_WIDTH, FIGURE_HEIGHT])

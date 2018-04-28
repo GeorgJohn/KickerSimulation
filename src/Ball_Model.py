@@ -14,21 +14,17 @@ class Ball:
         self.__time = time_delta
 
     def move(self, kicker, keeper):
-        self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.sin(self.__angle) * self.__speed * self.__time
-        self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.cos(self.__angle) * self.__speed * self.__time
+        self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.cos(self.__angle) * self.__speed * self.__time
+        self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.sin(self.__angle) * self.__speed * self.__time
 
-        if COURT_WIDTH / 2 < self.__pos[Coordinate.X] < COURT_WIDTH - X_POSITION_HUMAN_KEEPER - FIGURE_WIDTH / 2 \
-                and 0 < self.__angle < math.pi:
-            keeper.game_bar_intersection(self)
+        # keeper.check_for_interaction(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):
             i = i + 1
 
-        new_speed_square = self.__speed * self.__speed - 2 * 0.15 * 9810
-        if new_speed_square > 0:
-            self.__speed = math.sqrt(new_speed_square)
-        else:
+        self.__speed = self.__speed - 0.01 * 9810 * self.__time
+        if self.__speed <= 0:
             self.kick_off()
 
         self.__pos[Coordinate.X] = self.__new_pos[Coordinate.X]
@@ -38,7 +34,7 @@ class Ball:
     def kick_off(self):
         self.__new_pos[Coordinate.X] = COURT_WIDTH / 2
         self.__new_pos[Coordinate.Y] = COURT_HEIGHT / 2
-        self.__new_angle = random.uniform(math.pi / 4, 3 * math.pi / 4)
+        self.__new_angle = random.uniform(math.pi / 4, - math.pi / 4)
         self.__speed = 1000
 
     def get_x_position(self):

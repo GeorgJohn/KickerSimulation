@@ -17,13 +17,13 @@ class Ball:
         self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.cos(self.__angle) * self.__speed * self.__time
         self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.sin(self.__angle) * self.__speed * self.__time
 
-        # keeper.check_for_interaction(self)
+        keeper.check_for_interaction(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):
             i = i + 1
 
-        self.__speed = self.__speed - 0.01 * 9810 * self.__time
+        self.__speed = self.__speed - 0.02 * 9810 * self.__time
         if self.__speed <= 0:
             self.kick_off()
 

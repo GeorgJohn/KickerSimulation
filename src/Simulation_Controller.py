@@ -7,7 +7,7 @@ from src import Ball_Model
 from src import Kicker_Model
 from src import SimpleHumanAI_Model
 
-random.seed
+random.seed()
 
 ball_start_pos_x = COURT_WIDTH / 2  # random.randint(20, Const.COURT_WIDTH - 20)
 ball_start_pos_y = COURT_HEIGHT / 2  # random.randint(20, Const.COURT_HEIGHT - 20)  # Position wo der Ball startet

@@ -30,8 +30,6 @@ class Kicker:
                         ball.set_new_angle(- math.pi - ball.get_angle())
                     elif ball.get_angle() > 0:
                         ball.set_new_angle(math.pi - ball.get_angle())
-                    else:
-                        ball.set_new_angle(0)
                     ball.set_new_y_position(ball.get_y_position() +
                                             math.sin(ball.get_angle()) * ball.get_speed() * self.__time)
                     ball.set_new_x_position(self.__borderline_x_max +
@@ -71,7 +69,7 @@ class Kicker:
                                         ball.get_speed() * (self.__time - delta_t_collision))
                 y_pos_in_range = False
             elif ball.get_new_y_position() < self.__borderline_y_min:
-                delta_t_collision = (self.__borderline_y_min - ball.get_y_position()) / \
+                delta_t_collision = (ball.get_y_position() - self.__borderline_y_min) / \
                                     (math.sin(ball.get_angle()) * ball.get_speed())
                 ball.set_new_angle(- ball.get_angle())
                 ball.set_new_x_position(ball.get_x_position() +
@@ -93,8 +91,8 @@ class Kicker:
                 self.__ball_in_goal_area = False
             else:
                 if ball.get_new_y_position() > self.__borderline_goal_bar_y_max:
-                    delta_t_collision = (self.__borderline_goal_bar_y_max - ball.get_y_position() /
-                                         (math.sin(ball.get_angle()) * ball.get_speed()))
+                    delta_t_collision = (self.__borderline_goal_bar_y_max - ball.get_y_position())\
+                                        / (math.sin(ball.get_angle()) * ball.get_speed())
                     ball.set_new_angle(- ball.get_angle())
                     ball.set_new_x_position(ball.get_x_position() +
                                             math.cos(ball.get_angle()) * ball.get_speed() * self.__time)
@@ -102,8 +100,8 @@ class Kicker:
                                             math.sin(ball.get_new_angle()) *
                                             ball.get_speed() * (self.__time - delta_t_collision))
                 elif ball.get_new_y_position() < self.__borderline_goal_bar_y_min:
-                    delta_t_collision = (self.__borderline_goal_bar_y_min - ball.get_y_position() /
-                                         (math.sin(ball.get_angle()) * ball.get_speed()))
+                    delta_t_collision = (ball.get_y_position() - self.__borderline_goal_bar_y_min)\
+                                        / (math.sin(ball.get_angle()) * ball.get_speed())
                     ball.set_new_angle(- ball.get_angle())
                     ball.set_new_x_position(ball.get_x_position() +
                                             math.cos(ball.get_angle()) * ball.get_speed() * self.__time)

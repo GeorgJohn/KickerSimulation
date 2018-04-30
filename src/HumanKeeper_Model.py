@@ -1,29 +1,8 @@
-import math
-import random
-from src.Constant import*
+from src.GameBar_Model import GameBar
+from src.Constant import *
 
 
-class GameBar:
-    """Konstanten"""
-    SHOOT_SPEED = 2000
-
-    def __init__(self, position, speed, time_delta):
-        self._position = position
-        self._next_position = -1
-        self._speed = speed
-        self._time = time_delta
-
-    def get_position(self):
-        return self._position
-
-    def get_max_speed(self):
-        return self._speed
-
-    def set_max_speed(self, speed):
-        self._speed = speed
-
-
-class Keeper(GameBar):
+class HumanKeeper(GameBar):
     """Konstanten"""
     NUMBER_OF_FIGURES = 1
     DISTANCE_FIGURES = 0
@@ -37,33 +16,7 @@ class Keeper(GameBar):
     def __init__(self, speed, time_delta):
         super().__init__(self.MAX_POS_KEEPER / 2, speed, time_delta)
 
-    def _new_desired_pos(self, desired_pos):
-        if 0 <= desired_pos <= self.MAX_POS_KEEPER:
-            self._next_position = desired_pos
-        elif desired_pos > self.MAX_POS_KEEPER:
-            self._next_position = self.MAX_POS_KEEPER
-        elif desired_pos < 0:
-            self._next_position = 0
-
-        self._pos_next_time_step()
-
-    def _pos_next_time_step(self):
-        if self._next_position > self._position + 5:
-            new_position = self._position + self._speed * self._time
-        elif self._next_position < self._position - 5:
-            new_position = self._position - self._speed * self._time
-        else:
-            new_position = self._next_position
-
-        if new_position > self.MAX_POS_KEEPER:
-            self._position = self.MAX_POS_KEEPER
-        elif new_position < 0:
-            self._position = 0
-        else:
-            self._position = new_position
-
     def check_for_interaction(self, ball):
-
         if ball.get_x_position() < self.X_REFLECTION_PLANE:
             if self.X_REFLECTION_PLANE - ball.get_x_position() <= ball.get_new_x_position() - ball.get_x_position():
                 interaction = self.check_for_shoot(ball)
@@ -97,7 +50,7 @@ class Keeper(GameBar):
             ball.set_new_angle(- math.pi + shoot_offset / (FIGURE_HEIGHT + BALL_DIAMETER))
         else:
             ball.set_new_angle(math.pi)
-        ball.set_speed(self.SHOOT_SPEED)
+        ball.set_speed(SHOOT_SPEED)
         ball.set_new_y_position(ball.get_y_position() +
                                 math.sin(ball.get_angle()) * ball.get_speed() * self._time)
         ball.set_new_x_position(self.X_REFLECTION_PLANE +
@@ -150,18 +103,5 @@ class Keeper(GameBar):
                 interaction = False
         else:
             interaction = False
-        if interaction:
-            print(interaction)
+
         return interaction
-
-
-class Strategy(Keeper):
-    def __init__(self, speed, time_delta):
-        super().__init__(speed, time_delta)
-
-    def new_strategy_step(self, ball):
-        if - math.pi / 2 < ball.get_angle() < math.pi / 2:
-            self._new_desired_pos(ball.get_y_position() - self.POSITION_ON_BAR)
-        else:
-            self._new_desired_pos(self.MAX_POS_KEEPER/2)
-

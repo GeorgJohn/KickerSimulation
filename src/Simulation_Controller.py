@@ -1,11 +1,12 @@
 import pygame
 import random
-import math
 from src.Constant import *
 from src import Simulation_View
 from src import Ball_Model
 from src import Kicker_Model
-from src import SimpleHumanAI_Model
+from src import HumanKeeper_Model
+from src.SimpleHumanAI_Controller import SimpleHumanAI
+# from src import SimpleHumanAI_Model
 
 random.seed()
 
@@ -24,19 +25,20 @@ my_view = Simulation_View.View()
 my_ball = Ball_Model.Ball(ball_start_pos_x, ball_start_pos_y, ball_start_pos_z, ball_speed, ball_angle,
                           ball_angle_speed, time_delta)
 my_kicker = Kicker_Model.Kicker(time_delta)
-my_strategy = SimpleHumanAI_Model.Strategy(speed, time_delta)
+my_human_keeper = HumanKeeper_Model.HumanKeeper(speed, time_delta)
+my_human_strategy = SimpleHumanAI()
 
 running = True
 while running:
 
-    my_ball.move(my_kicker, my_strategy)
-    my_strategy.new_strategy_step(my_ball)
+    my_ball.move(my_kicker, my_human_keeper)
+    my_human_strategy.new_strategy_step(my_human_keeper, my_ball)
 
     my_view.display_empty_screen()
     my_view.display_court_line()
     my_view.display_info()
     my_view.display_ball(my_ball)
-    my_view.display_human_figures(my_strategy)
+    my_view.display_human_figures(my_human_keeper)
     my_view.display_score(my_kicker.get_score())
 
     clock.tick_busy_loop(60)

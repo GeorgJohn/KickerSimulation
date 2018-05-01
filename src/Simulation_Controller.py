@@ -5,8 +5,9 @@ from src import Simulation_View
 from src import Ball_Model
 from src import Kicker_Model
 from src import HumanKeeper_Model
+from src import ComputerKeeper_Model
 from src.SimpleHumanAI_Controller import SimpleHumanAI
-# from src import SimpleHumanAI_Model
+from src.ManualComputerKeeper_Controller import ManualKeeperController
 
 random.seed()
 
@@ -28,22 +29,39 @@ my_kicker = Kicker_Model.Kicker(time_delta)
 my_human_keeper = HumanKeeper_Model.HumanKeeper(speed, time_delta)
 my_human_strategy = SimpleHumanAI()
 
+my_computer_keeper = ComputerKeeper_Model.ComputerKeeper(speed, time_delta)
+my_manual_controller = ManualKeeperController()
+
 running = True
 while running:
 
-    my_ball.move(my_kicker, my_human_keeper)
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                my_manual_controller.set_move_up()
+            elif event.key == pygame.K_UP:
+                my_manual_controller.set_move_down()
+        elif event.type == pygame.KEYUP:
+            if event.key in (pygame.K_UP, pygame.K_DOWN):
+                my_manual_controller.reset_move_bar()
+        elif event.type == pygame.QUIT:
+            running = False
+
+    my_manual_controller.move_bar(my_computer_keeper)
+
     my_human_strategy.new_strategy_step(my_human_keeper, my_ball)
+
+    my_ball.move(my_kicker, my_human_keeper, my_computer_keeper)
 
     my_view.display_empty_screen()
     my_view.display_court_line()
     my_view.display_info()
     my_view.display_ball(my_ball)
     my_view.display_human_figures(my_human_keeper)
+    my_view.display_computer_figures(my_computer_keeper)
     my_view.display_score(my_kicker.get_score())
 
     clock.tick_busy_loop(60)
 
     pygame.display.flip()  # Fenster anzeigen
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+

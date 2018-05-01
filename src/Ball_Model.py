@@ -13,11 +13,12 @@ class Ball:
         self.__omega = omega_z
         self.__time = time_delta
 
-    def move(self, kicker, keeper):
+    def move(self, kicker, human_keeper, computer_keeper):
         self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.cos(self.__angle) * self.__speed * self.__time
         self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.sin(self.__angle) * self.__speed * self.__time
 
-        keeper.check_for_interaction(self)
+        human_keeper.check_for_interaction(self)
+        computer_keeper.check_for_interaction(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):

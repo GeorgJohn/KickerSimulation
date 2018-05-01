@@ -2,14 +2,14 @@ from src.GameBar_Model import GameBar
 from src.Constant import *
 
 
-class HumanKeeper(GameBar):
+class ComputerKeeper(GameBar):
     """Konstanten"""
     NUMBER_OF_FIGURES = 1
     DISTANCE_FIGURES = 0
     MAX_POS_KEEPER = 242
     POSITION_ON_BAR = 219
-    ABS_X_POSITION = COURT_WIDTH - X_POSITION_KEEPER
-    X_REFLECTION_PLANE = COURT_WIDTH - X_POSITION_KEEPER - FIGURE_WIDTH / 2 - BALL_RADIUS
+    ABS_X_POSITION = X_POSITION_KEEPER
+    X_REFLECTION_PLANE = ABS_X_POSITION + FIGURE_WIDTH / 2 + BALL_RADIUS
     X_OFFSET_REFLECTION_PLANE = FIGURE_WIDTH / 2 + BALL_RADIUS
     Y_OFFSET_REFLECTION_PLANE = FIGURE_HEIGHT / 2 + BALL_RADIUS
 
@@ -17,12 +17,12 @@ class HumanKeeper(GameBar):
         super().__init__(self.MAX_POS_KEEPER / 2, speed, time_delta)
 
     def check_for_interaction(self, ball):
-        if ball.get_x_position() < self.X_REFLECTION_PLANE:
-            if self.X_REFLECTION_PLANE - ball.get_x_position() <= ball.get_new_x_position() - ball.get_x_position():
+        if ball.get_x_position() > self.X_REFLECTION_PLANE:
+            if ball.get_x_position() - self.X_REFLECTION_PLANE <= ball.get_x_position() - ball.get_new_x_position():
                 interaction = self.check_for_shoot(ball)
             else:
                 interaction = False
-        elif ball.get_x_position() - self.X_REFLECTION_PLANE < (ball.get_speed() * self._time
+        elif self.X_REFLECTION_PLANE - ball.get_x_position() < (ball.get_speed() * self._time
                                                                 + 2 * self.X_OFFSET_REFLECTION_PLANE):
             interaction = self.check_for_side_collision(ball)
         else:
@@ -30,8 +30,8 @@ class HumanKeeper(GameBar):
         return interaction
 
     def check_for_shoot(self, ball):
-        intersection = ball.get_y_position() + math.tan(ball.get_angle())\
-                       * (self.X_REFLECTION_PLANE - ball.get_x_position())
+        intersection = ball.get_y_position() - math.tan(ball.get_angle())\
+                       * (ball.get_x_position() - self.X_REFLECTION_PLANE)
         if self._position + self.POSITION_ON_BAR - self.Y_OFFSET_REFLECTION_PLANE < intersection \
                 < self._position + self.POSITION_ON_BAR + self.Y_OFFSET_REFLECTION_PLANE:
             self.shoot(ball, intersection)
@@ -41,18 +41,13 @@ class HumanKeeper(GameBar):
         return interaction
 
     def shoot(self, ball, intersection):
-        delta_t_collision = (self.X_REFLECTION_PLANE - ball.get_x_position()) / \
+        delta_t_collision = (ball.get_x_position() - self.X_REFLECTION_PLANE) / \
                             (math.cos(ball.get_angle()) * ball.get_speed())
         shoot_offset = self._position + self.POSITION_ON_BAR - intersection
-        if shoot_offset < 0:
-            ball.set_new_angle(math.pi + (math.pi / 3) * (shoot_offset / (FIGURE_HEIGHT / 2 + BALL_RADIUS)))
-        elif shoot_offset > 0:
-            ball.set_new_angle(- math.pi + (math.pi / 3) * (shoot_offset / (FIGURE_HEIGHT / 2 + BALL_RADIUS)))
-        else:
-            ball.set_new_angle(math.pi)
+        ball.set_new_angle((math.pi / 3) * (- shoot_offset / (FIGURE_HEIGHT / 2 + BALL_RADIUS)))
         ball.set_speed(SHOOT_SPEED)
         ball.set_new_y_position(intersection +
-                                math.sin(ball.get_angle()) * ball.get_speed() * (self._time - delta_t_collision))
+                                math.sin(ball.get_new_angle()) * ball.get_speed() * (self._time - delta_t_collision))
         ball.set_new_x_position(self.X_REFLECTION_PLANE +
                                 math.cos(ball.get_new_angle()) *
                                 ball.get_speed() * (self._time - delta_t_collision))

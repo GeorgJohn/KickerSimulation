@@ -23,8 +23,8 @@ speed = 500  # Stangen maximal Geschwindigkeit in m/s
 
 clock = pygame.time.Clock()
 my_view = Simulation_View.View()
-my_ball = Ball_Model.Ball(ball_start_pos_x, ball_start_pos_y, ball_start_pos_z, ball_speed, ball_angle,
-                          ball_angle_speed, time_delta)
+my_ball = Ball_Model.Ball(x_pos=ball_start_pos_x, y_pos=ball_start_pos_y, speed=ball_speed,
+                          angle=ball_angle, time_delta=time_delta)
 my_kicker = Kicker_Model.Kicker(time_delta)
 my_human_keeper = HumanKeeper_Model.HumanKeeper(speed, time_delta)
 my_human_strategy = SimpleHumanAI()

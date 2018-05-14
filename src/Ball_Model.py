@@ -4,7 +4,7 @@ from src.Constant import *
 
 
 class Ball:
-    def __init__(self, x_pos, y_pos, z_pos, speed, angle, omega_z, time_delta):
+    def __init__(self, x_pos=0, y_pos=0, z_pos=0, speed=0.0, angle=0.0, omega_z=0.0, time_delta=0.0):
         self.__pos = [x_pos, y_pos, z_pos]
         self.__new_pos = [x_pos, y_pos, z_pos]
         self.__angle = angle
@@ -35,7 +35,7 @@ class Ball:
     def kick_off(self):
         self.__new_pos[Coordinate.X] = COURT_WIDTH / 2
         self.__new_pos[Coordinate.Y] = COURT_HEIGHT / 2
-        self.__new_angle = random.uniform(math.pi / 4, - math.pi / 4)
+        self.__new_angle = random.uniform(- 0.2326, 0.2326) + math.pi
         self.__speed = 1000
 
     def get_x_position(self):

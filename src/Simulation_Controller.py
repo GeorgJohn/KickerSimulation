@@ -51,7 +51,10 @@ while running:
 
     my_human_strategy.new_strategy_step(my_human_keeper, my_ball)
 
-    my_ball.move(my_kicker, my_human_keeper, my_computer_keeper)
+    my_ball.move(my_kicker, my_computer_keeper, my_human_keeper)
+    if my_ball.get_terminal():
+        my_ball.kick_off()
+        my_ball.set_terminal(False)
 
     my_view.display_empty_screen()
     my_view.display_court_line()

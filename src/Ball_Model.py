@@ -12,13 +12,16 @@ class Ball:
         self.__speed = speed
         self.__omega = omega_z
         self.__time = time_delta
+        self.__terminal = False
 
-    def move(self, kicker, human_keeper, computer_keeper):
+    def move(self, kicker, computer_keeper=None, human_keeper=None):
         self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.cos(self.__angle) * self.__speed * self.__time
         self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.sin(self.__angle) * self.__speed * self.__time
 
-        human_keeper.check_for_interaction(self)
-        computer_keeper.check_for_interaction(self)
+        if human_keeper:
+            human_keeper.check_for_interaction(self)
+        if computer_keeper:
+            computer_keeper.check_for_interaction(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):
@@ -26,16 +29,16 @@ class Ball:
 
         self.__speed = self.__speed - 0.02 * 9810 * self.__time
         if self.__speed <= 0:
-            self.kick_off()
+            self.set_terminal(True)
 
         self.__pos[Coordinate.X] = self.__new_pos[Coordinate.X]
         self.__pos[Coordinate.Y] = self.__new_pos[Coordinate.Y]
         self.__angle = self.__new_angle
 
     def kick_off(self):
-        self.__new_pos[Coordinate.X] = COURT_WIDTH / 2
-        self.__new_pos[Coordinate.Y] = COURT_HEIGHT / 2
-        self.__new_angle = random.uniform(- 0.2326, 0.2326) + math.pi
+        self.__pos[Coordinate.X] = self.__new_pos[Coordinate.X] = COURT_WIDTH / 2
+        self.__pos[Coordinate.Y] = self.__new_pos[Coordinate.Y] = COURT_HEIGHT / 2
+        self.__angle = self.__new_angle = random.uniform(- 0.2326, 0.2326) + math.pi
         self.__speed = 1000
 
     def get_x_position(self):
@@ -82,3 +85,9 @@ class Ball:
 
     def get_angular_speed(self):
         return self.__omega
+
+    def get_terminal(self):
+        return self.__terminal
+
+    def set_terminal(self, boolean):
+        self.__terminal = boolean

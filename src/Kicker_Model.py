@@ -83,11 +83,11 @@ class Kicker:
         else:
             if ball.get_new_x_position() > self.__goal_line_human:
                 self.score_counter(Gamer.COMPUTER)
-                ball.kick_off()
+                ball.set_terminal(True)
                 self.__ball_in_goal_area = False
             elif ball.get_new_x_position() < self.__goal_line_computer:
                 self.score_counter(Gamer.HUMAN)
-                ball.kick_off()
+                ball.set_terminal(True)
                 self.__ball_in_goal_area = False
             else:
                 if ball.get_new_y_position() > self.__borderline_goal_bar_y_max:

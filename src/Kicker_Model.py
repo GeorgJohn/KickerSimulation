@@ -124,3 +124,6 @@ class Kicker:
 
     def get_score(self):
         return self.__score
+
+    def reset_score_counter(self):
+        self.__score = [0, 0]

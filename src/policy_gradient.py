@@ -20,7 +20,7 @@ def calculate_naive_returns(rewards):
 def discount_rewards(rewards, gamma=0.98):
     discounted_returns = [0 for _ in rewards]
     discounted_returns[-1] = rewards[-1]
-    for t in range(len(rewards)-2, -1, -1): # iterate backwards
+    for t in range(len(rewards)-2, -1, -1):  # iterate backwards
         discounted_returns[t] = rewards[t] + discounted_returns[t+1]*gamma
     return discounted_returns
 
@@ -43,24 +43,27 @@ def epsilon_greedy_action_annealed(action_distribution, percentage, epsilon_star
 
 class PGAgent(object):
 
-    def __init__(self, session, state_size, num_actions, hidden_size, learning_rate=1e-3,
+    def __init__(self, session, state_size, num_actions, hidden_size_1, hidden_size_2, learning_rate=1e-3,
                  explore_exploit_setting='epsilon_greedy_0.05'):
         self.session = session
         self.state_size = state_size
         self.num_actions = num_actions
-        self.hidden_size = hidden_size
+        self.hidden_size_1 = hidden_size_1
+        self.hidden_size_2 = hidden_size_2
         self.learning_rate = learning_rate
         self.explore_exploit_setting = explore_exploit_setting
 
         self.build_model()
         self.build_training()
+        self.saver = tf.train.Saver()
 
     def build_model(self):
         with tf.variable_scope('pg-model'):
             self.state = tf.placeholder(shape=[None, self.state_size], dtype=tf.float32)
-            self.h0 = slim.fully_connected(self.state, self.hidden_size)
-            self.h1 = slim.fully_connected(self.h0, self.hidden_size)
-            self.output = slim.fully_connected(self.h1, self.num_actions, activation_fn=tf.nn.softmax)
+            self.h0 = slim.fully_connected(self.state, self.hidden_size_1, activation_fn=tf.nn.sigmoid)
+            self.h1 = slim.fully_connected(self.h0, self.hidden_size_2, activation_fn=tf.nn.sigmoid)
+            self.h2 = slim.fully_connected(self.h1, self.hidden_size_1, activation_fn=tf.nn.sigmoid)
+            self.output = slim.fully_connected(self.h2, self.num_actions, activation_fn=tf.nn.softmax)
 
     def build_training(self):
         self.action_input = tf.placeholder(tf.int32, shape=[None])
@@ -150,19 +153,20 @@ def main():
     epsilon_stop = 3000
     train_frequency = 1
     max_episode_length = 600
-    render_start = 4800
+    render_start = 10
     should_render = True
 
-    explore_exploit_setting = 'epsilon_greedy_annealed_1.0->0.001'
+    explore_exploit_setting = 'greedy'
 
     env = Env.EnvironmentController()
     state_size = 5
     num_actions = 3
 
     solved = False
+
     with tf.Session() as session:
-        agent = PGAgent(session=session, state_size=state_size, num_actions=num_actions, hidden_size=20,
-                        explore_exploit_setting=explore_exploit_setting)
+        agent = PGAgent(session=session, state_size=state_size, num_actions=num_actions, hidden_size_1=900,
+                        hidden_size_2=900, explore_exploit_setting=explore_exploit_setting)
         session.run(tf.global_variables_initializer())
 
         episode_rewards = []
@@ -181,7 +185,7 @@ def main():
 
                 state_prime, reward, terminal = env.step(action)
                 state_prime = state_prime[-5:]
-                if (render_start > 0 and i > render_start and should_render): # or (solved and should_render):
+                if (render_start > 0 and i > render_start and should_render):  # or (solved and should_render):
                     env.render()
                 episode_history.add_to_history(state, action, reward, state_prime)
                 state = state_prime
@@ -203,11 +207,13 @@ def main():
                     break
 
             if i % 10:
-                if np.mean(episode_rewards[:-100]) > 100.0:
+                if np.mean(episode_rewards[:-100]) > 1.0:
                     solved = True
                 else:
                     solved = False
         print('Solved:', solved, 'Mean Reward', np.mean(episode_rewards[:-100]))
+        save_path = agent.saver.save(session, "/tmp/model_1.ckpt")
+        print("Model saved in path: %s" % save_path)
 
 
 main()

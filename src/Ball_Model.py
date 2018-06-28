@@ -12,16 +12,27 @@ class Ball:
         self.__speed = speed
         self.__omega = omega_z
         self.__time = time_delta
+        self.__human_keeper_shoot_flag = False
+        self.__human_keeper_side_collision = False
+        self.__computer_keeper_shoot_flag = False
+        self.__computer_keeper_side_collision = False
         self.__terminal = False
 
     def move(self, kicker, computer_keeper=None, human_keeper=None):
         self.__new_pos[Coordinate.X] = self.__pos[Coordinate.X] + math.cos(self.__angle) * self.__speed * self.__time
         self.__new_pos[Coordinate.Y] = self.__pos[Coordinate.Y] + math.sin(self.__angle) * self.__speed * self.__time
 
+        self.__human_keeper_shoot_flag = False
+        self.__human_keeper_side_collision = False
+        self.__computer_keeper_shoot_flag = False
+        self.__computer_keeper_side_collision = False
+
         if human_keeper:
-            human_keeper.check_for_interaction(self)
+            self.__human_keeper_shoot_flag, self.__human_keeper_side_collision\
+                = human_keeper.check_for_interaction(self)
         if computer_keeper:
-            computer_keeper.check_for_interaction(self)
+            self.__computer_keeper_shoot_flag, self.__computer_keeper_side_collision\
+                = computer_keeper.check_for_interaction(self)
 
         i = 0
         while i < 3 and not kicker.collision(self):
@@ -38,11 +49,11 @@ class Ball:
     def kick_off(self):
         self.__pos[Coordinate.X] = self.__new_pos[Coordinate.X] = COURT_WIDTH / 2
         self.__pos[Coordinate.Y] = self.__new_pos[Coordinate.Y] = COURT_HEIGHT / 2
-        self.__new_angle = random.uniform(- 0.2326, 0.2326)
-        if self.__new_angle > 0:
-            self.__angle = self.__new_angle = self.__new_angle - math.pi
-        else:
-            self.__angle = self.__new_angle = self.__new_angle + math.pi
+        self.__new_angle = math.pi  # random.uniform(- 0.2326, 0.2326)
+        # if self.__new_angle > 0:
+        #     self.__angle = self.__new_angle = self.__new_angle - math.pi
+        # else:
+        #     self.__angle = self.__new_angle = self.__new_angle + math.pi
         self.__speed = 500
 
     def get_x_position(self):
@@ -95,3 +106,9 @@ class Ball:
 
     def set_terminal(self, boolean):
         self.__terminal = boolean
+
+    def get_human_shoot_flag(self):
+        return self.__human_keeper_shoot_flag
+
+    def get_computer_shoot_flag(self):
+        return self.__computer_keeper_shoot_flag

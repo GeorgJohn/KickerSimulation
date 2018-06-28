@@ -1,4 +1,5 @@
 import math
+from src.Constant import *
 
 
 class Observation:
@@ -7,11 +8,21 @@ class Observation:
         self._state = []
 
     def update(self, kicker, ball, computer_gamer):
-        new_x_pos = ball.get_x_position() + math.cos(ball.get_angle()) * ball.get_speed()
-        new_y_pos = ball.get_y_position() + math.sin(ball.get_angle()) * ball.get_speed()
+        standardize_x_pos = ball.get_x_position() / COURT_WIDTH
+        standardize_y_pos = ball.get_y_position() / COURT_HEIGHT
 
-        self._state = [kicker.get_score(), ball.get_x_position(), ball.get_y_position(), new_x_pos, new_y_pos,
-                       computer_gamer.get_position()]
+        standardize_speed = ball.get_speed() / BALL_MAX_SPEED
+        standardize_angle = ball.get_angle() / math.pi
+
+        standardize_gamer_pos = computer_gamer.get_position() / MAX_POS_KEEPER
+
+        self._state = [kicker.get_score(), standardize_x_pos, standardize_y_pos, standardize_speed,
+                       standardize_angle, standardize_gamer_pos]
+
+        # new_x_pos = ball.get_x_position() + math.cos(ball.get_angle()) * ball.get_speed()
+        # new_y_pos = ball.get_y_position() + math.sin(ball.get_angle()) * ball.get_speed()
+        # self._state = [kicker.get_score(), ball.get_x_position(), ball.get_y_position(), new_x_pos, new_y_pos,
+        #                computer_gamer.get_position()]
 
     def get_state(self):
         return self._state
@@ -26,19 +37,22 @@ class EnvironmentModel(Observation):
         self.__done = False
         self.__enable_view = False
 
-    def calc_reward(self):
-        self.__reward += 0.1
-
-        if self.__done:
+    def calc_reward(self, flag):
+        # self.__reward += 0
+        if flag:
+            self.__reward = 1
+        elif self.__done:
             score = self.get_state()[0][:]
             human_diff = score[0] - self.__old_score[0]
             computer_diff = score[1] - self.__old_score[1]
             if human_diff != 0:
-                self.__reward -= 1000
+                self.__reward = -2
             elif computer_diff != 0:
-                self.__reward += 500
+                self.__reward = +2
 
             self.set_old_score(score)
+        else:
+            self.__reward = 0
 
     def get_reward(self):
         return self.__reward

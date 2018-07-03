@@ -49,11 +49,11 @@ class Ball:
     def kick_off(self):
         self.__pos[Coordinate.X] = self.__new_pos[Coordinate.X] = COURT_WIDTH / 2
         self.__pos[Coordinate.Y] = self.__new_pos[Coordinate.Y] = COURT_HEIGHT / 2
-        self.__new_angle = math.pi  # random.uniform(- 0.2326, 0.2326)
-        # if self.__new_angle > 0:
-        #     self.__angle = self.__new_angle = self.__new_angle - math.pi
-        # else:
-        #     self.__angle = self.__new_angle = self.__new_angle + math.pi
+        self.__new_angle = random.uniform(- 0.1, 0.1)
+        if self.__new_angle > 0:
+            self.__angle = self.__new_angle = self.__new_angle - math.pi
+        else:
+            self.__angle = self.__new_angle = self.__new_angle + math.pi
         self.__speed = 500
 
     def get_x_position(self):

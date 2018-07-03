@@ -42,10 +42,12 @@ class PGAgent(object):
     def build_model(self):
         with tf.variable_scope('pg-model'):
             self.state = tf.placeholder(shape=[None, self.state_size], dtype=tf.float32)
-            self.h0 = slim.fully_connected(self.state, self.hidden_size_1, activation_fn=tf.nn.sigmoid)
-            self.h1 = slim.fully_connected(self.h0, self.hidden_size_2, activation_fn=tf.nn.sigmoid)
-            self.h2 = slim.fully_connected(self.h1, self.hidden_size_1, activation_fn=tf.nn.sigmoid)
-            self.output = slim.fully_connected(self.h2, self.num_actions, activation_fn=tf.nn.softmax)
+            self.h0 = slim.fully_connected(self.state, self.hidden_size_1, activation_fn=tf.nn.relu)
+            self.h1 = slim.fully_connected(self.h0, self.hidden_size_2, activation_fn=tf.nn.relu)
+            self.h2 = slim.fully_connected(self.h1, self.hidden_size_2, activation_fn=tf.nn.relu)
+            self.h3 = slim.fully_connected(self.h2, self.hidden_size_2, activation_fn=tf.nn.relu)
+            self.h4 = slim.fully_connected(self.h3, self.hidden_size_1, activation_fn=tf.nn.relu)
+            self.output = slim.fully_connected(self.h4, self.num_actions, activation_fn=tf.nn.softmax)
 
     def sample_action_from_distribution(self, action_distribution, epsilon_percentage):
         # Choose an action based on the action probability
@@ -72,7 +74,9 @@ class PGAgent(object):
 
     def predict_action(self, state, epsilon_percentage):
         action_distribution = self.session.run(self.output, feed_dict={self.state: [state]})[0]
+        # action = np.argmax(action_distribution)
         action = self.sample_action_from_distribution(action_distribution, epsilon_percentage)
+        print(action_distribution)
         return action
 
 
@@ -85,13 +89,13 @@ def main():
     explore_exploit_setting = 'epsilon_greedy_annealed_1.0->0.001'
 
     with tf.Session() as session:
-        agent = PGAgent(session=session, state_size=state_size, num_actions=num_actions, hidden_size_1=900,
-                        hidden_size_2=900, explore_exploit_setting=explore_exploit_setting)
+        agent = PGAgent(session=session, state_size=state_size, num_actions=num_actions, hidden_size_1=300,
+                        hidden_size_2=600, explore_exploit_setting=explore_exploit_setting)
 
-        agent.saver.restore(session, "/tmp/model.ckpt")
+        agent.session.run(tf.global_variables_initializer())
+
+        agent.saver.restore(agent.session, "/tmp/model_reward_-_0_5.ckpt")
         print("Model restored.")
-
-        session.run(tf.global_variables_initializer())
 
         state = env.reset()
         state = state[-5:]

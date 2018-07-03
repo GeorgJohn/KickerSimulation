@@ -61,11 +61,12 @@ class EnvironmentController:
 
     def __init__(self):
         random.seed()
-        angle = math.pi  # random.uniform(- 0.2326, 0.2326)
-        # if angle > 0:
-        #     angle -= math.pi
-        # else:
-        #     angle += math.pi
+        # angle = math.pi
+        angle = random.uniform(- 0.1, 0.1)
+        if angle > 0:
+            angle -= math.pi
+        else:
+            angle += math.pi
 
         self.env = Environment_Model.EnvironmentModel()
         self.kicker = Kicker_Model.Kicker(TIME_STEP)

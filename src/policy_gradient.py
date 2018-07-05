@@ -2,7 +2,11 @@ import tensorflow as tf
 import numpy as np
 import random
 import tqdm
-from src import Environment_Controller as Env
+import matplotlib.pyplot as plt
+import Environment_Controller as Env
+import Rewards_Plotter
+
+
 slim = tf.contrib.slim
 
 
@@ -149,20 +153,30 @@ class Memory(object):
         self.discounted_returns += episode.discounted_returns
 
 
+class RewardsMemory(object):
+
+    def __init__(self):
+        self.rewards = []
+        self.episodes = []
+
+
 def main():
     # Configure Settings
     total_episodes = 5000
     total_steps_max = 10000
-    epsilon_stop = 500
+    epsilon_stop = 1000
     train_frequency = 1
+    plot_frequency = 10
     max_episode_length = 1000
     render_start = 4900
     should_render = True
+    should_plot = True
+    episode_finished = False
 
-    explore_exploit_setting = 'greedy'
+    explore_exploit_setting = 'epsilon_greedy_annealed_0.5->0.001'
 
     env = Env.EnvironmentController()
-    state_size = 5
+    state_size = 6
     num_actions = 3
 
     solved = False
@@ -181,83 +195,114 @@ def main():
         episode_rewards = []
         batch_losses = []
 
+        plt.ion()
+        reward_memory = RewardsMemory()
+        reward_plt = Rewards_Plotter.RewardPlot()
+
         global_memory = Memory()
         steps = 0
+        train_it = np.uint(0)
+        plot_it = np.uint(0)
         i = np.uint64(0)
 
-        while not solved:
+        try:
+            while not solved:
 
-            # for i in tqdm.tqdm(range(total_episodes)):
+                # for i in tqdm.tqdm(range(total_episodes)):
 
-            state = env.reset()
-            state = state[-5:]
-            episode_reward = 0.0
-            episode_history = EpisodeHistory()
-            epsilon_percentage = float(min(i/float(epsilon_stop), 1.0))
-            for j in range(max_episode_length):
-                action = agent.predict_action(state, epsilon_percentage)
+                state = env.reset()
+                state = state[-6:]
+                episode_reward = 0.0
+                episode_history = EpisodeHistory()
+                # epsilon_percentage = float(min(i/float(epsilon_stop), 1.0))
+                for j in range(max_episode_length):
+                    action = agent.predict_action(state, 1.0)  # epsilon_percentage)
 
-                state_prime, reward, terminal = env.step(action)
-                state_prime = state_prime[-5:]
-                # if (render_start > 0 and i > render_start and should_render):  # or (solved and should_render):
-                #    env.render()
-                episode_history.add_to_history(state, action, reward, state_prime)
-                state = state_prime
-                episode_reward += reward
-                steps += 1
-                if terminal:
-                    episode_history.discounted_returns = discount_rewards(episode_history.rewards, 0.99)
-                    global_memory.add_episode(episode_history)
+                    state_prime, reward, terminal = env.step(action)
+                    state_prime = state_prime[-6:]
+                    # if (render_start > 0 and i > render_start and should_render):  # or (solved and should_render):
+                    #    env.render()
+                    episode_history.add_to_history(state, action, reward, state_prime)
+                    state = state_prime
+                    episode_reward += reward
+                    steps += 1
+                    if terminal:
+                        episode_history.discounted_returns = discount_rewards(episode_history.rewards, 0.99)
+                        global_memory.add_episode(episode_history)
 
-                    # if np.mod(i, train_frequency) == 0:
-                    feed_dict = {agent.reward_input: np.array(global_memory.discounted_returns),
-                                 agent.action_input: np.array(global_memory.actions),
-                                 agent.state: np.array(global_memory.states)}
-                    _, batch_loss = session.run([agent.train_step, agent.loss], feed_dict=feed_dict)
-                    batch_losses.append(batch_loss)
-                    global_memory.reset_memory()
+                        plot_it += 1
+                        train_it += 1
+                        i += 1
 
-                    episode_rewards.append(episode_reward)
-                    break
+                        if np.mod(train_it, train_frequency) == 0:
+                            feed_dict = {agent.reward_input: np.array(global_memory.discounted_returns),
+                                         agent.action_input: np.array(global_memory.actions),
+                                         agent.state: np.array(global_memory.states)}
+                            _, batch_loss = session.run([agent.train_step, agent.loss], feed_dict=feed_dict)
+                            batch_losses.append(batch_loss)
+                            global_memory.reset_memory()
 
-            i += 1
+                            episode_rewards.append(episode_reward)
+                            train_it = 0
+                            episode_finished = True
 
-            if np.mod(i, 100) == 0:
-                print('Mean Reward: ', np.mean(episode_rewards[:-99]), '  Episodes: ', i)
-                if np.mean(episode_rewards[:-99]) > 2.0:
-                    solved = True
-                    save_path = agent.saver.save(session, "/tmp/model_solved.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                elif np.mean(episode_rewards[:-99]) > 1.5 and not save_step_6:
-                    save_path = agent.saver.save(session, "/tmp/model_reward_1_5.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                    save_step_6 = True
-                elif np.mean(episode_rewards[:-99]) > 1.0 and not save_step_5:
-                    save_path = agent.saver.save(session, "/tmp/model_reward_1_0.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                    save_step_5 = True
-                elif np.mean(episode_rewards[:-99]) > 0.5 and not save_step_4:
-                    save_path = agent.saver.save(session, "/tmp/model_reward_0_5.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                    save_step_4 = True
-                elif np.mean(episode_rewards[:-99]) > 0.0 and not save_step_3:
-                    save_path = agent.saver.save(session, "/tmp/model_reward_0_0.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                    save_step_3 = True
-                elif np.mean(episode_rewards[:-99]) > -0.5 and not save_step_2:
-                    save_path = agent.saver.save(session, "/tmp/model_reward_-_0_5.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                    save_step_2 = True
-                elif np.mean(episode_rewards[:-99]) > -1.0 and not save_step_1:
-                    save_path = agent.saver.save(session, "/tmp/model_reward_-_1_0.ckpt")
-                    print("Model saved in path: %s" % save_path)
-                    save_step_1 = True
-                else:
-                    solved = False
+                        if i > plot_frequency + 1:
+                            if np.mod(plot_it, plot_frequency) == 0 and should_plot:
+                                reward_memory.rewards.append(np.mean(episode_rewards[:-int(plot_frequency)]))
+                                reward_memory.episodes.append(i)
+                                reward_plt.update(reward_memory.episodes, reward_memory.rewards)
 
-        print('Solved:', solved, 'Mean Reward', np.mean(episode_rewards[:-100]))
-        # save_path = agent.saver.save(session, "/tmp/model_2.ckpt")
-        # print("Model saved in path: %s" % save_path)
+                        if episode_finished:
+                            break
+
+                # if np.mod(i, 100) == 0:
+                #     print('Mean Reward: ', np.mean(episode_rewards[:-99]), '  Episodes: ', i)
+                #     if np.mean(episode_rewards[:-99]) > 2.0:
+                #         solved = True
+                #         save_path = agent.saver.save(session, "/tmp/model_solved.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #     elif np.mean(episode_rewards[:-99]) > 1.5 and not save_step_6:
+                #         save_path = agent.saver.save(session, "/tmp/model_reward_1_5.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #         save_step_6 = True
+                #     elif np.mean(episode_rewards[:-99]) > 1.0 and not save_step_5:
+                #         save_path = agent.saver.save(session, "/tmp/model_reward_1_0.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #         save_step_5 = True
+                #     elif np.mean(episode_rewards[:-99]) > 0.5 and not save_step_4:
+                #         save_path = agent.saver.save(session, "/tmp/model_reward_0_5.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #         save_step_4 = True
+                #     elif np.mean(episode_rewards[:-99]) > 0.0 and not save_step_3:
+                #         save_path = agent.saver.save(session, "/tmp/model_reward_0_0.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #         save_step_3 = True
+                #     elif np.mean(episode_rewards[:-99]) > -0.5 and not save_step_2:
+                #         save_path = agent.saver.save(session, "/tmp/model_reward_-_0_5.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #         save_step_2 = True
+                #     elif np.mean(episode_rewards[:-99]) > -1.0 and not save_step_1:
+                #         save_path = agent.saver.save(session, "/tmp/model_reward_-_1_0.ckpt")
+                #         print("Model saved in path: %s" % save_path)
+                #         save_step_1 = True
+                #     else:
+                #         solved = False
+                if i > 101:
+                    if np.mod(i, 100) == 0:
+                        print('Mean Reward: ', np.mean(episode_rewards[:-100]), '  Episodes: ', i)
+                        if np.mean(episode_rewards[:-100]) > 5.0:
+                            solved = True
+                            save_path = agent.saver.save(session, "/tmp/model_solved.ckpt")
+                            print("Model saved in path: %s" % save_path)
+                        else:
+                            solved = False
+
+        except KeyboardInterrupt:
+            print('Solved:', solved, 'Mean Reward', np.mean(episode_rewards[:-100]), '  Episodes: ', i)
+            save_path = agent.saver.save(session, "/tmp/finished_model_without_rack_reward.ckpt")
+            print("Model saved in path: %s" % save_path)
+            pass
 
 
-main()
+if __name__ == '__main__':
+    main()

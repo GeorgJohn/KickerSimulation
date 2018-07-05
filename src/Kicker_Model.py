@@ -1,5 +1,5 @@
 import math
-from src.Constant import *
+from Constant import *
 
 
 class Kicker:

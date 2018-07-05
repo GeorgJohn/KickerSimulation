@@ -1,6 +1,6 @@
 import math
 import random
-from src.Constant import *
+from Constant import *
 
 
 class Ball:

@@ -1,12 +1,14 @@
 import pygame
 import random
-from src.Constant import *
-from src import Simulation_View
-from src import Kicker_Model
-from src import Ball_Model
-from src import ComputerKeeper_Model
-from src import Environment_Model
-from src.ComputerKeeper_Model import ComputerKeeper
+from Constant import *
+import Simulation_View
+import Kicker_Model
+import Ball_Model
+import ComputerKeeper_Model
+import HumanKeeper_Model
+import Environment_Model
+from ComputerKeeper_Model import ComputerKeeper
+from SimpleHumanAI_Controller import SimpleHumanAI
 
 # KEEPER_START_POS = MAX_POS_KEEPER / 2
 BALL_START_POS_X = COURT_WIDTH / 2
@@ -73,6 +75,8 @@ class EnvironmentController:
         self.ball = Ball_Model.Ball(x_pos=BALL_START_POS_X, y_pos=BALL_START_POS_Y, speed=BALL_START_SPEED,
                                     angle=angle, time_delta=TIME_STEP)
         self.computer_keeper = ComputerKeeper_Model.ComputerKeeper(BAR_SPEED, TIME_STEP)
+        self.human_keeper = HumanKeeper_Model.HumanKeeper(BAR_SPEED, TIME_STEP)
+        self.human_strategy = SimpleHumanAI()
         self.action_handler = ActionHandler(self.computer_keeper)
         self.create_view = False
         self.view = None
@@ -85,7 +89,8 @@ class EnvironmentController:
             self.env.set_old_score([0, 0])
 
         self.computer_keeper.set_position(random.randint(0, MAX_POS_KEEPER))
-        self.env.update(self.kicker, self.ball, self.computer_keeper)
+        self.human_keeper.set_position(MAX_POS_KEEPER / 2)
+        self.env.update(self.kicker, self.ball, self.computer_keeper, self.human_keeper)
         self.env.set_reward(0)
         return self.env.get_observation()
 
@@ -98,15 +103,21 @@ class EnvironmentController:
         self.view.display_info()
         self.view.display_ball(self.ball)
         self.view.display_computer_figures(self.computer_keeper)
+        self.view.display_human_figures(self.human_keeper)
         self.view.display_score(self.kicker.get_score())
 
         pygame.display.flip()
 
     def step(self, action):
-        self.action_handler.move_bar(action)
-        self.ball.move(self.kicker, self.computer_keeper,  human_keeper=None)
-        self.env.update(self.kicker, self.ball, self.computer_keeper)
-        self.check_for_done()
+
+        self.human_strategy.new_strategy_step(self.human_keeper, self.ball)
+        for i in range(2):
+            self.action_handler.move_bar(action)
+            self.ball.move(self.kicker, self.computer_keeper,  self.human_keeper)
+            self.env.update(self.kicker, self.ball, self.computer_keeper, self.human_keeper)
+            if self.check_for_done():
+                break
+
         self.env.calc_reward(self.ball.get_computer_shoot_flag())
         return [self.env.get_observation(), self.env.get_reward(), self.env.get_done()]
 
@@ -117,6 +128,8 @@ class EnvironmentController:
             self.env.set_done(True)
         else:
             self.env.set_done(False)
+
+        return self.env.get_done()
 
     @staticmethod
     def get_random_action():

@@ -1,5 +1,5 @@
-from src.GameBar_Model import GameBar
-from src.Constant import *
+from GameBar_Model import GameBar
+from Constant import *
 
 
 class HumanKeeper(GameBar):

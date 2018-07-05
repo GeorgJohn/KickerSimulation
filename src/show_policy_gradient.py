@@ -3,7 +3,7 @@ import numpy as np
 import random
 import pygame
 
-from src import Environment_Controller as Env
+import Environment_Controller as Env
 slim = tf.contrib.slim
 
 
@@ -83,7 +83,7 @@ class PGAgent(object):
 def main():
 
     env = Env.EnvironmentController()
-    state_size = 5
+    state_size = 6
     num_actions = 3
 
     explore_exploit_setting = 'epsilon_greedy_annealed_1.0->0.001'
@@ -94,11 +94,11 @@ def main():
 
         agent.session.run(tf.global_variables_initializer())
 
-        agent.saver.restore(agent.session, "/tmp/model_reward_-_0_5.ckpt")
+        agent.saver.restore(agent.session, "/tmp/finished_model_without_rack_reward.ckpt")
         print("Model restored.")
 
         state = env.reset()
-        state = state[-5:]
+        state = state[-6:]
 
         clock = pygame.time.Clock()
 
@@ -112,7 +112,7 @@ def main():
             if terminal:
                 state = env.reset()
 
-            state = state[-5:]
+            state = state[-6:]
 
             env.render()
 
@@ -120,7 +120,8 @@ def main():
                 if event.type == pygame.QUIT:
                     running = False
 
-            clock.tick_busy_loop(60)
+            clock.tick_busy_loop(30)
 
 
-main()
+if __name__ == '__main__':
+    main()

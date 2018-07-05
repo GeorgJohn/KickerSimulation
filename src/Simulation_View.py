@@ -1,5 +1,5 @@
 import pygame
-from src.Constant import *
+from Constant import *
 
 
 class View:

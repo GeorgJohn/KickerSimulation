@@ -1,5 +1,5 @@
 import math
-from src.HumanKeeper_Model import HumanKeeper
+from HumanKeeper_Model import HumanKeeper
 
 
 class SimpleHumanAI:
